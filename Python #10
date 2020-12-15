@@ -1,0 +1,275 @@
+drive.mount('/content/drive')
+Mounted at /content/drive
+In [16]:
+cd /content/drive/MyDrive/Colab Notebooks (1)
+/content/drive/MyDrive/Colab Notebooks (1)
+In [ ]:
+ls
+In [17]:
+# import the necessary packages
+from keras.models import Sequential
+from keras.layers.core import Activation
+from keras.layers.core import Flatten
+from keras.layers.core import Dense
+from keras.optimizers import Adam
+from sklearn.preprocessing import LabelBinarizer
+from sklearn.model_selection import train_test_split
+from sklearn.metrics import classification_report
+from PIL import Image
+from imutils import paths
+import numpy as np
+import os
+In [18]:
+# grab all image paths in the input dataset directory, then initialize
+# our list of images and corresponding class labels
+print("[INFO] loading images...")
+imagePaths = paths.list_images("3scene")
+data = []
+labels = []
+[INFO] loading images...
+In [19]:
+# loop over our input images
+for imagePath in imagePaths:
+	# load the input image from disk, resize it to 64x64 pixels, scale
+	# the pixel intensities to the range [0, 1], and then update our
+	# images list
+	image = Image.open(imagePath)
+  #preprocessing
+	image = np.array(image.resize((64, 64))) / 255.0 #normalisasi
+	data.append(image)
+
+	# extract the class label from the file path and update the
+	# labels list
+	label = imagePath.split(os.path.sep)[-2]
+	labels.append(label)
+In [20]:
+print(labels)
+['forest', 'forest', 'forest', 'forest', 'forest', 'forest', 'forest', 'forest', 'forest', 'forest', 'forest', 'forest', 'forest', 'forest', 'forest', 'forest', 'forest', 'forest', 'forest', 'forest', 'forest', 'forest', 'forest', 'forest', 'forest', 'forest', 'forest', 'forest', 'forest', 'forest', 'forest', 'forest', 'forest', 'forest', 'forest', 'forest', 'forest', 'forest', 'forest', 'forest', 'forest', 'forest', 'forest', 'forest', 'forest', 'forest', 'forest', 'forest', 'forest', 'forest', 'forest', 'forest', 'forest', 'forest', 'forest', 'forest', 'forest', 'forest', 'forest', 'forest', 'forest', 'forest', 'forest', 'forest', 'forest', 'forest', 'forest', 'forest', 'forest', 'forest', 'forest', 'forest', 'forest', 'forest', 'forest', 'forest', 'forest', 'forest', 'forest', 'forest', 'forest', 'forest', 'forest', 'forest', 'forest', 'forest', 'forest', 'forest', 'forest', 'forest', 'forest', 'forest', 'forest', 'forest', 'forest', 'forest', 'forest', 'forest', 'forest', 'forest', 'forest', 'forest', 'forest', 'forest', 'forest', 'forest', 'forest', 'forest', 'forest', 'forest', 'forest', 'forest', 'forest', 'forest', 'forest', 'forest', 'forest', 'forest', 'forest', 'forest', 'forest', 'forest', 'forest', 'forest', 'forest', 'forest', 'forest', 'forest', 'forest', 'forest', 'forest', 'forest', 'forest', 'forest', 'forest', 'forest', 'forest', 'forest', 'forest', 'forest', 'forest', 'forest', 'forest', 'forest', 'forest', 'forest', 'forest', 'forest', 'forest', 'forest', 'forest', 'forest', 'forest', 'forest', 'forest', 'forest', 'forest', 'forest', 'forest', 'forest', 'forest', 'forest', 'forest', 'forest', 'forest', 'forest', 'forest', 'forest', 'forest', 'forest', 'forest', 'forest', 'forest', 'forest', 'forest', 'forest', 'forest', 'forest', 'forest', 'forest', 'forest', 'forest', 'forest', 'forest', 'forest', 'forest', 'forest', 'forest', 'forest', 'forest', 'forest', 'forest', 'forest', 'forest', 'forest', 'forest', 'forest', 'forest', 'forest', 'forest', 'forest', 'forest', 'forest', 'forest', 'forest', 'forest', 'forest', 'forest', 'forest', 'forest', 'forest', 'forest', 'forest', 'forest', 'forest', 'forest', 'forest', 'forest', 'forest', 'forest', 'forest', 'forest', 'forest', 'forest', 'forest', 'forest', 'forest', 'forest', 'forest', 'forest', 'forest', 'forest', 'forest', 'forest', 'forest', 'forest', 'forest', 'forest', 'forest', 'forest', 'forest', 'forest', 'forest', 'forest', 'forest', 'forest', 'forest', 'forest', 'forest', 'forest', 'forest', 'forest', 'forest', 'forest', 'forest', 'forest', 'forest', 'forest', 'forest', 'forest', 'forest', 'forest', 'forest', 'forest', 'forest', 'forest', 'forest', 'forest', 'forest', 'forest', 'forest', 'forest', 'forest', 'forest', 'forest', 'forest', 'forest', 'forest', 'forest', 'forest', 'forest', 'forest', 'forest', 'forest', 'forest', 'forest', 'forest', 'forest', 'forest', 'forest', 'forest', 'forest', 'forest', 'forest', 'forest', 'forest', 'forest', 'forest', 'forest', 'forest', 'forest', 'forest', 'forest', 'forest', 'forest', 'forest', 'forest', 'forest', 'forest', 'forest', 'forest', 'forest', 'forest', 'forest', 'forest', 'forest', 'forest', 'forest', 'forest', 'forest', 'forest', 'forest', 'forest', 'forest', 'forest', 'forest', 'forest', 'forest', 'highway', 'highway', 'highway', 'highway', 'highway', 'highway', 'highway', 'highway', 'highway', 'highway', 'highway', 'highway', 'highway', 'highway', 'highway', 'highway', 'highway', 'highway', 'highway', 'highway', 'highway', 'highway', 'highway', 'highway', 'highway', 'highway', 'highway', 'highway', 'highway', 'highway', 'highway', 'highway', 'highway', 'highway', 'highway', 'highway', 'highway', 'highway', 'highway', 'highway', 'highway', 'highway', 'highway', 'highway', 'highway', 'highway', 'highway', 'highway', 'highway', 'highway', 'highway', 'highway', 'highway', 'highway', 'highway', 'highway', 'highway', 'highway', 'highway', 'highway', 'highway', 'highway', 'highway', 'highway', 'highway', 'highway', 'highway', 'highway', 'highway', 'highway', 'highway', 'highway', 'highway', 'highway', 'highway', 'highway', 'highway', 'highway', 'highway', 'highway', 'highway', 'highway', 'highway', 'highway', 'highway', 'highway', 'highway', 'highway', 'highway', 'highway', 'highway', 'highway', 'highway', 'highway', 'highway', 'highway', 'highway', 'highway', 'highway', 'highway', 'highway', 'highway', 'highway', 'highway', 'highway', 'highway', 'highway', 'highway', 'highway', 'highway', 'highway', 'highway', 'highway', 'highway', 'highway', 'highway', 'highway', 'highway', 'highway', 'highway', 'highway', 'highway', 'highway', 'highway', 'highway', 'highway', 'highway', 'highway', 'highway', 'highway', 'highway', 'highway', 'highway', 'highway', 'highway', 'highway', 'highway', 'highway', 'highway', 'highway', 'highway', 'highway', 'highway', 'highway', 'highway', 'highway', 'highway', 'highway', 'highway', 'highway', 'highway', 'highway', 'highway', 'highway', 'highway', 'highway', 'highway', 'highway', 'highway', 'highway', 'highway', 'highway', 'highway', 'highway', 'highway', 'highway', 'highway', 'highway', 'highway', 'highway', 'highway', 'highway', 'highway', 'highway', 'highway', 'highway', 'highway', 'highway', 'highway', 'highway', 'highway', 'highway', 'highway', 'highway', 'highway', 'highway', 'highway', 'highway', 'highway', 'highway', 'highway', 'highway', 'highway', 'highway', 'highway', 'highway', 'highway', 'highway', 'highway', 'highway', 'highway', 'highway', 'highway', 'highway', 'highway', 'highway', 'highway', 'highway', 'highway', 'highway', 'highway', 'highway', 'highway', 'highway', 'highway', 'highway', 'highway', 'highway', 'highway', 'highway', 'highway', 'highway', 'highway', 'highway', 'highway', 'highway', 'highway', 'highway', 'highway', 'highway', 'highway', 'highway', 'highway', 'highway', 'highway', 'highway', 'highway', 'highway', 'highway', 'highway', 'highway', 'highway', 'highway', 'highway', 'highway', 'highway', 'highway', 'highway', 'highway', 'highway', 'highway', 'highway', 'highway', 'highway', 'highway', 'highway', 'highway', 'highway', 'highway', 'highway', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast', 'coast']
+In [21]:
+# encode the labels, converting them from strings to integers
+lb = LabelBinarizer()
+labels = lb.fit_transform(labels)
+In [22]:
+print(labels)
+[[0 1 0]
+ [0 1 0]
+ [0 1 0]
+ ...
+ [1 0 0]
+ [1 0 0]
+ [1 0 0]]
+In [23]:
+# perform a training and testing split, using 75% of the data for
+# training and 25% for evaluation
+(trainX, testX, trainY, testY) = train_test_split(np.array(data),	np.array(labels), test_size=0.25, shuffle=True)
+print(trainX.shape)
+print(testX.shape)
+(711, 64, 64, 3)
+(237, 64, 64, 3)
+In [45]:
+from keras.layers import Convolution2D, MaxPooling2D
+from keras.models import Sequential
+from keras.layers.core import Flatten, Dense
+
+model1 = Sequential()
+model1.add(Convolution2D(8, (3,3), activation='relu', input_shape=(64,64,3)))
+model1.add(MaxPool2D(2,2))
+model1.add(Convolution2D(16, (3,3), activation='relu'))
+model1.add(MaxPool2D(2,2))
+#fully connected layer
+model1.add(Flatten())
+model1.add(Dense(100, activation='relu'))
+model1.add(Dense(3, activation='softmax'))
+
+model1.summary()
+Model: "sequential_15"
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+conv2d_12 (Conv2D)           (None, 62, 62, 8)         224       
+_________________________________________________________________
+max_pooling2d_10 (MaxPooling (None, 31, 31, 8)         0         
+_________________________________________________________________
+conv2d_13 (Conv2D)           (None, 29, 29, 16)        1168      
+_________________________________________________________________
+max_pooling2d_11 (MaxPooling (None, 14, 14, 16)        0         
+_________________________________________________________________
+flatten_4 (Flatten)          (None, 3136)              0         
+_________________________________________________________________
+dense_6 (Dense)              (None, 100)               313700    
+_________________________________________________________________
+dense_7 (Dense)              (None, 3)                 303       
+=================================================================
+Total params: 315,395
+Trainable params: 315,395
+Non-trainable params: 0
+_________________________________________________________________
+In [40]:
+from keras.models import Sequential
+from keras.layers.core import Flatten
+from keras.layers.core import Dense
+
+model = Sequential(
+    [
+        Flatten(input_shape=(64*64*3,)),
+        Dense(100, activation="relu", name="layer1"),
+        Dense(16, activation="relu", name="layer2"),
+        Dense(16, activation="relu", name="layer3"),
+        Dense(3, activation = "softmax", name="layer4"),
+    ]
+)
+In [ ]:
+model.summary()
+Model: "sequential"
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+flatten (Flatten)            (None, 12288)             0         
+_________________________________________________________________
+layer1 (Dense)               (None, 100)               1228900   
+_________________________________________________________________
+layer2 (Dense)               (None, 16)                1616      
+_________________________________________________________________
+layer3 (Dense)               (None, 16)                272       
+_________________________________________________________________
+layer4 (Dense)               (None, 3)                 51        
+=================================================================
+Total params: 1,230,839
+Trainable params: 1,230,839
+Non-trainable params: 0
+_________________________________________________________________
+In [43]:
+# train the model using the Adam optimizer
+print("[INFO] training network...")
+opt = Adam(lr=1e-3, decay=1e-3 / 50)
+model1.compile(loss="categorical_crossentropy", optimizer=opt, metrics=["accuracy"])
+[INFO] training network...
+In [44]:
+H = model1.fit(trainX, trainY, validation_data=(testX, testY), epochs=25, batch_size=32)
+Epoch 1/25
+23/23 [==============================] - 0s 10ms/step - loss: 1.0801 - accuracy: 0.4951 - val_loss: 1.0465 - val_accuracy: 0.6287
+Epoch 2/25
+23/23 [==============================] - 0s 5ms/step - loss: 1.0234 - accuracy: 0.5837 - val_loss: 0.9608 - val_accuracy: 0.6287
+Epoch 3/25
+23/23 [==============================] - 0s 5ms/step - loss: 0.9227 - accuracy: 0.5879 - val_loss: 0.8428 - val_accuracy: 0.6076
+Epoch 4/25
+23/23 [==============================] - 0s 5ms/step - loss: 0.8129 - accuracy: 0.5992 - val_loss: 0.7311 - val_accuracy: 0.6414
+Epoch 5/25
+23/23 [==============================] - 0s 5ms/step - loss: 0.7411 - accuracy: 0.6343 - val_loss: 0.6719 - val_accuracy: 0.7089
+Epoch 6/25
+23/23 [==============================] - 0s 5ms/step - loss: 0.7326 - accuracy: 0.6385 - val_loss: 0.6880 - val_accuracy: 0.7342
+Epoch 7/25
+23/23 [==============================] - 0s 5ms/step - loss: 0.7031 - accuracy: 0.6681 - val_loss: 0.6517 - val_accuracy: 0.7215
+Epoch 8/25
+23/23 [==============================] - 0s 5ms/step - loss: 0.6648 - accuracy: 0.7018 - val_loss: 0.6150 - val_accuracy: 0.6962
+Epoch 9/25
+23/23 [==============================] - 0s 5ms/step - loss: 0.6246 - accuracy: 0.7482 - val_loss: 0.5970 - val_accuracy: 0.7173
+Epoch 10/25
+23/23 [==============================] - 0s 5ms/step - loss: 0.6007 - accuracy: 0.7764 - val_loss: 0.5907 - val_accuracy: 0.7722
+Epoch 11/25
+23/23 [==============================] - 0s 5ms/step - loss: 0.5738 - accuracy: 0.7651 - val_loss: 0.5355 - val_accuracy: 0.8186
+Epoch 12/25
+23/23 [==============================] - 0s 5ms/step - loss: 0.5756 - accuracy: 0.7806 - val_loss: 0.6560 - val_accuracy: 0.7300
+Epoch 13/25
+23/23 [==============================] - 0s 5ms/step - loss: 0.5513 - accuracy: 0.7553 - val_loss: 0.5376 - val_accuracy: 0.7975
+Epoch 14/25
+23/23 [==============================] - 0s 5ms/step - loss: 0.5098 - accuracy: 0.8031 - val_loss: 0.4960 - val_accuracy: 0.8101
+Epoch 15/25
+23/23 [==============================] - 0s 5ms/step - loss: 0.4894 - accuracy: 0.8186 - val_loss: 0.4788 - val_accuracy: 0.8228
+Epoch 16/25
+23/23 [==============================] - 0s 5ms/step - loss: 0.4940 - accuracy: 0.8200 - val_loss: 0.5981 - val_accuracy: 0.8059
+Epoch 17/25
+23/23 [==============================] - 0s 5ms/step - loss: 0.4844 - accuracy: 0.8186 - val_loss: 0.5047 - val_accuracy: 0.8059
+Epoch 18/25
+23/23 [==============================] - 0s 5ms/step - loss: 0.4731 - accuracy: 0.8101 - val_loss: 0.4941 - val_accuracy: 0.8143
+Epoch 19/25
+23/23 [==============================] - 0s 5ms/step - loss: 0.4538 - accuracy: 0.8172 - val_loss: 0.5011 - val_accuracy: 0.8101
+Epoch 20/25
+23/23 [==============================] - 0s 5ms/step - loss: 0.4463 - accuracy: 0.8383 - val_loss: 0.5623 - val_accuracy: 0.7932
+Epoch 21/25
+23/23 [==============================] - 0s 5ms/step - loss: 0.4321 - accuracy: 0.8368 - val_loss: 0.4530 - val_accuracy: 0.8776
+Epoch 22/25
+23/23 [==============================] - 0s 6ms/step - loss: 0.4194 - accuracy: 0.8397 - val_loss: 0.4184 - val_accuracy: 0.8945
+Epoch 23/25
+23/23 [==============================] - 0s 5ms/step - loss: 0.4163 - accuracy: 0.8439 - val_loss: 0.4047 - val_accuracy: 0.8861
+Epoch 24/25
+23/23 [==============================] - 0s 6ms/step - loss: 0.4097 - accuracy: 0.8481 - val_loss: 0.5378 - val_accuracy: 0.7679
+Epoch 25/25
+23/23 [==============================] - 0s 5ms/step - loss: 0.4620 - accuracy: 0.8115 - val_loss: 0.4833 - val_accuracy: 0.8397
+In [30]:
+import matplotlib.pyplot as plt
+
+print(H.history.keys())
+# summarize history for accuracy
+plt.plot(H.history['accuracy'])
+plt.plot(H.history['val_accuracy'])
+plt.title('model accuracy')
+plt.ylabel('accuracy')
+plt.xlabel('epoch')
+plt.legend(['train', 'test'], loc='upper left')
+plt.show()
+# summarize history for loss
+plt.plot(H.history['loss'])
+plt.plot(H.history['val_loss'])
+plt.title('model loss')
+plt.ylabel('loss')
+plt.xlabel('epoch')
+plt.legend(['train', 'test'], loc='upper left')
+plt.show()
+dict_keys(['loss', 'accuracy', 'val_loss', 'val_accuracy'])
+
+
+In [32]:
+# evaluate the network
+print("[INFO] evaluating network...")
+predictions = model1.predict(testX, batch_size=32)
+print(classification_report(testY.argmax(axis=1),
+	predictions.argmax(axis=1), target_names=lb.classes_))
+[INFO] evaluating network...
+              precision    recall  f1-score   support
+
+       coast       0.73      0.91      0.81        96
+      forest       0.82      0.99      0.90        76
+     highway       1.00      0.42      0.59        65
+
+    accuracy                           0.80       237
+   macro avg       0.85      0.77      0.76       237
+weighted avg       0.83      0.80      0.78       237
+
+In [ ]:
+model.save('nnmodel_scene')
+WARNING:tensorflow:From /usr/local/lib/python3.6/dist-packages/tensorflow/python/training/tracking/tracking.py:111: Model.state_updates (from tensorflow.python.keras.engine.training) is deprecated and will be removed in a future version.
+Instructions for updating:
+This property should not be used in TensorFlow 2.0, as updates are applied automatically.
+WARNING:tensorflow:From /usr/local/lib/python3.6/dist-packages/tensorflow/python/training/tracking/tracking.py:111: Layer.updates (from tensorflow.python.keras.engine.base_layer) is deprecated and will be removed in a future version.
+Instructions for updating:
+This property should not be used in TensorFlow 2.0, as updates are applied automatically.
+INFO:tensorflow:Assets written to: nnmodel_scene/assets
+In [ ]:
+import cv2
+import matplotlib.pyplot as plt
+image1='forest_test.jpg'
+In [ ]:
+img_array = cv2.imread(image1)
+plt.imshow(img_array)
+plt.show()
+# print(type(img_array))
+
+In [ ]:
+image_testing = Image.open('forest_test.jpg')
+image_testing = np.array(image_testing.resize((64, 64))) / 255.0
+image_testing.shape
+Out[ ]:
+(64, 64, 3)
+In [ ]:
+image_testing = np.expand_dims(image_testing, axis=0)
+print(image_testing.shape)
+(1, 64, 64, 3)
+In [ ]:
+output = model.predict(image_testing, 1)
+print(output)
+print(lb.classes_[output.argmax(axis=1)])
+WARNING:tensorflow:Model was constructed with shape (None, 12288) for input Tensor("flatten_input:0", shape=(None, 12288), dtype=float32), but it was called on an input with incompatible shape (1, 64, 64, 3).
+[[0.2624806  0.5831592  0.15436009]]
+['forest']
+In [ ]:
